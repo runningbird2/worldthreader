@@ -1,5 +1,6 @@
 package no2.worldthreader.common.dimension_change;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -93,8 +94,13 @@ public class DimensionChangeHelper {
         }
 
         ((EntityExtended) newEntity).worldthreader$onArrivedInServerWorld(destination.dimension(), source.dimension());
+
+        if (newEntity instanceof ServerPlayer serverPlayer) {
+            ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.invoker()
+                    .afterChangeWorld(serverPlayer, source, destination);
+        }
+
         return newEntity;
-        //Small TODO trigger fabric-entity-events-v1.afterWorldChanged here
     }
 
     public static Entity restoreEntityInWorld(TeleportedEntityInfo entityInfo) {
